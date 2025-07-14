@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: course-search-app
+  elasticsearch:
+    uris: http://localhost:9200
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.data.elasticsearch: DEBUG
+    com.example.coursesearchapp: INFO

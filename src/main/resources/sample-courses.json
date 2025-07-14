@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "title": "Physics 101",
+    "description": "Introduction to basic physics concepts including motion, forces, and energy",
+    "category": "Science",
+    "type": "COURSE",
+    "gradeRange": "6th-8th",
+    "minAge": 11,
+    "maxAge": 14,
+    "price": 199.99,
+    "nextSessionDate": "2025-08-15T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "Advanced Mathematics",
+    "description": "Advanced mathematical concepts including calculus and algebra",
+    "category": "Math",
+    "type": "COURSE",
+    "gradeRange": "9th-12th",
+    "minAge": 14,
+    "maxAge": 18,
+    "price": 299.99,
+    "nextSessionDate": "2025-08-20T14:00:00Z"
+  },
+  {
+    "id": "3",
+    "title": "Creative Writing Workshop",
+    "description": "Learn creative writing techniques and storytelling methods",
+    "category": "Art",
+    "type": "CLUB",
+    "gradeRange": "5th-7th",
+    "minAge": 10,
+    "maxAge": 13,
+    "price": 149.99,
+    "nextSessionDate": "2025-08-25T16:00:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Chemistry Basics",
+    "description": "Introduction to chemistry including atoms, molecules, and chemical reactions",
+    "category": "Science",
+    "type": "COURSE",
+    "gradeRange": "7th-9th",
+    "minAge": 12,
+    "maxAge": 15,
+    "price": 249.99,
+    "nextSessionDate": "2025-08-18T11:00:00Z"
+  },
+  {
+    "id": "5",
+    "title": "Digital Art Creation",
+    "description": "Learn digital art techniques using modern software and tools",
+    "category": "Art",
+    "type": "ONE_TIME",
+    "gradeRange": "6th-12th",
+    "minAge": 11,
+    "maxAge": 18,
+    "price": 99.99,
+    "nextSessionDate": "2025-08-22T15:00:00Z"
+  }
+]
