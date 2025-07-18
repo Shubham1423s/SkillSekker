@@ -1,20 +1,15 @@
 package com.Shubham.projects.SkillSeeker.Document;
 
-import lombok.AllArgsConstructor;
-
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.*;
+import org.springframework.data.elasticsearch.core.suggest.Completion;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Document(indexName = "courses")
 public class CourseDocument {
 
@@ -45,12 +40,18 @@ public class CourseDocument {
     @Field(type = FieldType.Double)
     private Double price;
 
-    @Field(type = FieldType.Date)
-    private LocalDateTime nextSessionDate;
+    // Change to LocalDate since your stored data is date-only
+    @Field(type = FieldType.Date, format = DateFormat.date)
+    private LocalDate nextSessionDate;
 
-    public enum CourseType {
-        ONE_TIME,
-        COURSE,
-        CLUB
+    // Make suggest field optional - it will be null if not present
+    @CompletionField
+    private Completion suggest;
+
+    public void setSuggestFromTitle() {
+        if (this.title != null) {
+            this.suggest = new Completion();
+            this.suggest.setInput(new String[]{this.title});
+        }
     }
 }

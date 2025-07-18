@@ -7,10 +7,10 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "com.coursesearch.repository")
+@EnableElasticsearchRepositories(basePackages = "com.shubham.skillseeker.repository")
 public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
-    @Value("${spring.elasticsearch.uris:http://localhost:9200}")
+    @Value("${spring.elasticsearch.turis:http://localhost:9200}")
     private String elasticsearchUrl;
 
     @Override

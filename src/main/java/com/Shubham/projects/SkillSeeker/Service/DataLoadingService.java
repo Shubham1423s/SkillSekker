@@ -4,10 +4,7 @@ import com.Shubham.projects.SkillSeeker.Document.CourseDocument;
 import com.Shubham.projects.SkillSeeker.Repository.CourseRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -21,101 +18,62 @@ import java.util.Map;
 @Service
 public class DataLoadingService {
 
-    private static final Logger log = LoggerFactory.getLogger(DataLoadingService.class);
-
     @Autowired
     private CourseRepository courseRepository;
-
-    private final ObjectMapper mapper;
-
-    public DataLoadingService() {
-        this.mapper = new ObjectMapper();
-        this.mapper.registerModule(new JavaTimeModule());
-    }
 
     @PostConstruct
     public void loadSampleData() {
         try {
-            long existingCount = courseRepository.count();
-            if (existingCount > 0) {
-                log.info("Data already exists. Total courses: {}. Skipping data loading.", existingCount);
+
+            if (courseRepository.count() < 52) {
+                System.out.println("Loading fresh data...");
+                courseRepository.deleteAll(); // Clear existing data
+            } else {
+                System.out.println("All 52 courses already loaded.");
                 return;
             }
 
-            log.info("Loading sample data from JSON file...");
-
+            // Load JSON file
+            ObjectMapper mapper = new ObjectMapper();
             ClassPathResource resource = new ClassPathResource("sample-courses.json");
-
-            if (!resource.exists()) {
-                log.error("Sample data file not found: sample-courses.json");
-                return;
-            }
 
             List<Map<String, Object>> coursesData = mapper.readValue(
                     resource.getInputStream(),
-                    new TypeReference<List<Map<String, Object>>>() {}
+                    new TypeReference<>() {}
             );
 
-            List<CourseDocument> courses = coursesData.stream()
-                    .map(this::mapToCourseDocument)
-                    .toList();
+            for (Map<String, Object> courseData : coursesData) {
+                CourseDocument course = new CourseDocument();
+                course.setId((String) courseData.get("id"));
+                course.setTitle((String) courseData.get("title"));
+                course.setDescription((String) courseData.get("description"));
+                course.setCategory((String) courseData.get("category"));
+                course.setType((String) courseData.get("type"));
+                course.setGradeRange((String) courseData.get("gradeRange"));
+                course.setMinAge((Integer) courseData.get("minAge"));
+                course.setMaxAge((Integer) courseData.get("maxAge"));
+                course.setPrice((Double) courseData.get("price"));
 
-            courseRepository.saveAll(courses);
 
-            log.info("Sample data loaded successfully! Total courses loaded: {}", courses.size());
-
-        } catch (IOException e) {
-            log.error("Error loading sample data: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to load sample data", e);
-        } catch (Exception e) {
-            log.error("Unexpected error during data loading: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to load sample data", e);
-        }
-    }
-
-    private CourseDocument mapToCourseDocument(Map<String, Object> courseData) {
-        try {
-            CourseDocument course = new CourseDocument();
-
-            course.setId((String) courseData.get("id"));
-            course.setTitle((String) courseData.get("title"));
-            course.setDescription((String) courseData.get("description"));
-            course.setCategory((String) courseData.get("category"));
-            course.setType((String) courseData.get("type"));
-            course.setGradeRange((String) courseData.get("gradeRange"));
-
-            course.setMinAge(convertToInteger(courseData.get("minAge")));
-            course.setMaxAge(convertToInteger(courseData.get("maxAge")));
-            course.setPrice(convertToDouble(courseData.get("price")));
-
-            String dateString = (String) courseData.get("nextSessionDate");
-            if (dateString != null) {
+                String dateString = (String) courseData.get("nextSessionDate");
                 LocalDateTime sessionDate = LocalDateTime.parse(
-                        dateString.replace("Z", ""),
-                        DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                        dateString,
+                        DateTimeFormatter.ISO_DATE_TIME
                 );
-                course.setNextSessionDate(sessionDate);
+                course.setNextSessionDate(sessionDate.toLocalDate());
+
+
+                course.setSuggestFromTitle();
+
+                courseRepository.save(course);
             }
 
-            return course;
+            System.out.println("Sample data loaded successfully!");
+            System.out.println("Total courses loaded: " + courseRepository.count());
 
-        } catch (Exception e) {
-            log.error("Error mapping course data: {}", courseData, e);
-            throw new RuntimeException("Failed to map course data", e);
+        } catch (IOException e) {
+            System.err.println("Error loading sample data: " + e.getMessage());
+            e.printStackTrace();
         }
-    }
-
-    private Integer convertToInteger(Object value) {
-        if (value == null) return null;
-        if (value instanceof Integer) return (Integer) value;
-        if (value instanceof Number) return ((Number) value).intValue();
-        return Integer.parseInt(value.toString());
-    }
-
-    private Double convertToDouble(Object value) {
-        if (value == null) return null;
-        if (value instanceof Double) return (Double) value;
-        if (value instanceof Number) return ((Number) value).doubleValue();
-        return Double.parseDouble(value.toString());
     }
 }
